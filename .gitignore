@@ -1,6 +1,11 @@
+# Files
 CMakeCache.txt
 Makefile
 cmake_install.cmake
+.DS_Store
+
+# Directories
 CMakeFiles/
 build/
-.DS_Store
+.vscode/
+carts/

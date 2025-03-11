@@ -16,6 +16,14 @@ static void printchars(char *str, uint8_t len) {
     printf("\n");
 }
 
+static uint8_t checksum() {
+    uint16_t checksum = 0;
+    for (int i = 0x0A0; i < 0x0BC; i++) {
+        checksum = checksum - ctx.rom_data[i];
+    }
+    return ((checksum - 0x19) & 0xFF);
+}
+
 bool cart_load(char *cart) {
     snprintf(ctx.filename, sizeof(ctx.filename), "%s", cart);
 
@@ -44,5 +52,9 @@ bool cart_load(char *cart) {
     printchars(ctx.header->maker_code, (uint8_t) sizeof(ctx.header->maker_code));
     printf("ROM Size: %dKB\n", ctx.rom_size/(1024 * 1024));
     printf("ROM Version: %d\n", ctx.header->version);
+
+    
+    printf("Checksum: %s\n", checksum() == ctx.header->checksum ? "OK" : "BAD");
+
     return true;
 }

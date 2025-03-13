@@ -187,24 +187,3 @@ uint8_t read_cart_ram(uint32_t addr) {
         exit(-1);
     }
 }
-
-/**
- * @brief Writes a 16-bit value to the cart ram.
- * 
- * @param addr the address to write to.
- * @param val the value to write.
- */
-void write_cart_ram16(uint32_t addr, uint16_t val) {
-    write_cart_ram(addr, val & 0xFF);
-    write_cart_ram(addr + 1, val >> 8);
-}
-
-/**
- * @brief Reads a 16-bit value from the cart ram.
- * 
- * @param addr the address to read from.
- * @return uint16_t the value at the address.
- */
-uint16_t read_cart_ram16(uint32_t addr) {
-    return (read_cart_ram(addr) | (read_cart_ram(addr + 1) << 8));
-}

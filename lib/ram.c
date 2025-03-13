@@ -37,27 +37,6 @@ void write_wram(uint32_t addr, uint16_t val) {
 }
 
 /**
- * @brief Reads the four bytes at the given address in WRAM.
- * 
- * @param addr The address to read from.
- * @return uint32_t The four bytes at the address.
- */
-uint32_t read_wram32(uint32_t addr) {
-    return (read_wram(addr) | (read_wram(addr + 2) << 16));
-}
-
-/**
- * @brief Writes four bytes to WRAM.
- * 
- * @param addr The address to write to.
- * @param val The value to write.
- */
-void write_wram32(uint32_t addr, uint32_t val) {
-    write_wram(addr, val & 0xFFFF);
-    write_wram(addr + 2, val >> 16);
-}
-
-/**
  * @brief Reads the four bytes at the given address in HRAM.
  * 
  * @param addr The address to read from.

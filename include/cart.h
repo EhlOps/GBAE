@@ -2,7 +2,7 @@
 #include <common.h>
 
 typedef struct {
-    uint8_t entry[4];
+    uint8_t rom_entry[4];
     uint8_t logo[0x9C];
     char title[12];
     char game_code[4];

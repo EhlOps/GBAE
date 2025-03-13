@@ -1,21 +1,35 @@
 #include <cart.h>
+#include <string.h>
 
 typedef struct {
+    // ROM Data
     char filename[1024];
     uint32_t rom_size;
     uint8_t *rom_data;
     rom_header *header;
+
+    // RAM Data
+    uint8_t ram_type;
+    uint8_t *ram_data;
 } cart_context;
 
 static cart_context ctx;
 
-static void printchars(char *str, uint8_t len) {
-    for (int i = 0; i < len; i++) {
-        printf("%c", str[i]);
-    }
-    printf("\n");
-}
+static const char *cart_ram_types[] = {
+    "EEPROM_V",     // 0x00
+    "SRAM_V",       // 0x01
+    "FLASH_V",      // 0x02
+    "FLASH512_V",   // 0x03
+    "FLASH1M_V",    // 0x04
+};
 
+static const size_t num_cart_ram_types = sizeof(cart_ram_types) / sizeof(cart_ram_types[0]);
+
+/**
+ * @brief A simple checksum function that checks the ROM data.
+ * 
+ * @return uint8_t the checksum value.
+ */
 static uint8_t checksum() {
     uint16_t checksum = 0;
     for (int i = 0x0A0; i < 0x0BC; i++) {
@@ -24,6 +38,54 @@ static uint8_t checksum() {
     return ((checksum - 0x19) & 0xFF);
 }
 
+/**
+ * @brief Sets the ram type for the cart context.
+ */
+static void find_ram_type() {
+    for(int word = 0; word < ctx.rom_size - 10; word+=4) {
+        for(int type = 0; type < num_cart_ram_types; type++) {
+            if(memcmp(&ctx.rom_data[word], cart_ram_types[type], strlen(cart_ram_types[type]) - 1) == 0) {
+                ctx.ram_type = type;
+                return;
+            }
+        }
+    }
+}
+
+static void init_ram() {
+    switch(ctx.ram_type) {
+        case 0x00: // EEPROM_Vnnn
+            ctx.ram_data = malloc(0x2000);
+            break;
+        case 0x01: // SRAM_Vnnn
+            ctx.ram_data = malloc(0x8000);
+            break;
+        case 0x02: // FLASH_Vnnn
+            ctx.ram_data = malloc(0x10000);
+            break;
+        case 0x03: // FLASH512_Vnnn
+            ctx.ram_data = malloc(0x10000);
+            break;
+        case 0x04: // FLASH1M_Vnnn
+            ctx.ram_data = malloc(0x20000);
+            break;
+        default: // No RAM
+            ctx.ram_data = NULL;
+            break;
+    }
+    if (!ctx.ram_data) {
+        printf("Failed to allocate RAM...\n");
+        exit(1);
+    }
+}
+
+/**
+ * @brief Loads a cart into the context.
+ * 
+ * @param cart the filename of the cart to load.
+ * @return true if the cart is loaded successfully.
+ * @return false if the cart failed to load.
+ */
 bool cart_load(char *cart) {
     snprintf(ctx.filename, sizeof(ctx.filename), "%s", cart);
 
@@ -33,7 +95,7 @@ bool cart_load(char *cart) {
         return false;
     }
 
-    printf("Opened: %s...\n", ctx.filename);
+    printf("Opened: %s\n", ctx.filename);
 
     fseek(fp, 0, SEEK_END);
     ctx.rom_size = ftell(fp);
@@ -44,17 +106,11 @@ bool cart_load(char *cart) {
     fclose(fp);
 
     ctx.header = (rom_header *)(ctx.rom_data);
-    printf("Title: ");
-    printchars(ctx.header->title, (uint8_t) sizeof(ctx.header->title));
-    printf("Game Code: ");
-    printchars(ctx.header->game_code, (uint8_t) sizeof(ctx.header->game_code));
-    printf("Maker Code: ");
-    printchars(ctx.header->maker_code, (uint8_t) sizeof(ctx.header->maker_code));
-    printf("ROM Size: %dKB\n", ctx.rom_size/(1024 * 1024));
-    printf("ROM Version: %d\n", ctx.header->version);
-
-    
     printf("Checksum: %s\n", checksum() == ctx.header->checksum ? "OK" : "BAD");
+
+    find_ram_type();
+
+    init_ram();
 
     return true;
 }

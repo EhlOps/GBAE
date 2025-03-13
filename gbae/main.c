@@ -1,4 +1,5 @@
 #include <cart.h>
+#include <clock.h>
 
 int main(int argc, char **argv) {
   if (argc < 2) {
@@ -8,5 +9,4 @@ int main(int argc, char **argv) {
   if (cart_load(argv[1])) {
     printf("Cart loaded successfully...\n");
   }
-  return 0;
 }

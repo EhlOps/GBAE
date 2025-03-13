@@ -133,7 +133,7 @@ void cart_load_ram() {
 }
 
 /**
- * @brief Saves the game state from a .sav file into cart ram.
+ * @brief Saves the game state from cart ram into a .sav file.
  * 
  */
 void cart_save_ram() {

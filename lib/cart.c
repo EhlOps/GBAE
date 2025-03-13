@@ -33,11 +33,7 @@ static char *cart_ram_types_lookup[] = {
     "FLASH1M_V",
 };
 
-/**
- * @brief A simple checksum function that checks the ROM data.
- * 
- * @return uint8_t the checksum value.
- */
+
 static uint8_t checksum() {
     uint16_t checksum = 0;
     for (int i = 0x0A0; i < 0x0BC; i++) {
@@ -46,9 +42,6 @@ static uint8_t checksum() {
     return ((checksum - 0x19) & 0xFF);
 }
 
-/**
- * @brief Sets the ram type for the cart context.
- */
 static void find_ram_type() {
     for(int word = 0; word < ctx.rom_size - 10; word+=4) {
         for(int type = 0; type < NUM_RAM_TYPES; type++) {
@@ -121,6 +114,10 @@ bool cart_load(char *cart) {
     return true;
 }
 
+/**
+ * @brief Loads the game state from a .sav file into cart ram.
+ * 
+ */
 void cart_load_ram() {
     char filename[1048];
     snprintf(filename, sizeof(filename), "%s.sav", ctx.filename);
@@ -135,6 +132,10 @@ void cart_load_ram() {
     fclose(fp);
 }
 
+/**
+ * @brief Saves the game state from a .sav file into cart ram.
+ * 
+ */
 void cart_save_ram() {
     char filename[1048];
     snprintf(filename, sizeof(filename), "%s.sav", ctx.filename);
@@ -147,4 +148,63 @@ void cart_save_ram() {
 
     fwrite(ctx.ram_data, ctx.ram_type, 1, fp);
     fclose(fp);
+}
+
+/**
+ * @brief Writes a byte to the cart ram.
+ * 
+ * @param addr the address to write to.
+ * @param val the value to write.
+ */
+void write_cart_ram(uint32_t addr, uint8_t val) {
+    if (addr >> 27 == 0x01) {
+        addr -= 0x08000000;
+        if (addr < 0x00 || addr >= ctx.ram_type) {
+            printf("INVALID RAM ADDR %08X\n", addr + 0x0A000000);
+            exit(-1);
+        }
+        ctx.ram_data[addr] = val;
+    }
+}
+
+
+/**
+ * @brief Reads a byte from the cart ram.
+ * 
+ * @param addr the address to read from.
+ * @return uint8_t the value at the address.
+ */
+uint8_t read_cart_ram(uint32_t addr) {
+    if (addr >> 27 == 0x01) {
+        addr -= 0x08000000;
+        if (addr < 0x00 || addr >= ctx.ram_type) {
+            printf("INVALID RAM ADDR %08X\n", addr + 0x0A000000);
+            exit(-1);
+        }
+        return ctx.ram_data[addr];
+    } else {
+        printf("NOT CART RAM ADDRESS %08X\n", addr);
+        exit(-1);
+    }
+}
+
+/**
+ * @brief Writes a 16-bit value to the cart ram.
+ * 
+ * @param addr the address to write to.
+ * @param val the value to write.
+ */
+void write_cart_ram16(uint32_t addr, uint16_t val) {
+    write_cart_ram(addr, val & 0xFF);
+    write_cart_ram(addr + 1, val >> 8);
+}
+
+/**
+ * @brief Reads a 16-bit value from the cart ram.
+ * 
+ * @param addr the address to read from.
+ * @return uint16_t the value at the address.
+ */
+uint16_t read_cart_ram16(uint32_t addr) {
+    return (read_cart_ram(addr) | (read_cart_ram(addr + 1) << 8));
 }

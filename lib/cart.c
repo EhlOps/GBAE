@@ -1,6 +1,16 @@
 #include <cart.h>
 #include <string.h>
 
+#define NUM_RAM_TYPES 5
+
+typedef enum {
+    EEPROM_V = 0x02000,     // 8KB
+    SRAM_V = 0x08000,       // 32KB
+    FLASH_V = 0x10000,      // 64KB
+    FLASH512_V = 0x10000,   // 64KB
+    FLASH1M_V = 0x20000,    // 128KB
+} ram_type;
+
 typedef struct {
     // ROM Data
     char filename[1024];
@@ -9,21 +19,19 @@ typedef struct {
     rom_header *header;
 
     // RAM Data
-    uint8_t ram_type;
+    ram_type ram_type;
     uint8_t *ram_data;
 } cart_context;
 
 static cart_context ctx;
 
-static const char *cart_ram_types[] = {
-    "EEPROM_V",     // 0x00
-    "SRAM_V",       // 0x01
-    "FLASH_V",      // 0x02
-    "FLASH512_V",   // 0x03
-    "FLASH1M_V",    // 0x04
+static char *cart_ram_types_lookup[] = {
+    "EEPROM_V",
+    "SRAM_V",
+    "FLASH_V",
+    "FLASH512_V",
+    "FLASH1M_V",
 };
-
-static const size_t num_cart_ram_types = sizeof(cart_ram_types) / sizeof(cart_ram_types[0]);
 
 /**
  * @brief A simple checksum function that checks the ROM data.
@@ -43,9 +51,25 @@ static uint8_t checksum() {
  */
 static void find_ram_type() {
     for(int word = 0; word < ctx.rom_size - 10; word+=4) {
-        for(int type = 0; type < num_cart_ram_types; type++) {
-            if(memcmp(&ctx.rom_data[word], cart_ram_types[type], strlen(cart_ram_types[type]) - 1) == 0) {
-                ctx.ram_type = type;
+        for(int type = 0; type < NUM_RAM_TYPES; type++) {
+            if(memcmp(&ctx.rom_data[word], cart_ram_types_lookup[type], strlen(cart_ram_types_lookup[type]) - 1) == 0) {
+                switch (type) {
+                    case 0:
+                        ctx.ram_type = EEPROM_V;
+                        break;
+                    case 1:
+                        ctx.ram_type = SRAM_V;
+                        break;
+                    case 2:
+                        ctx.ram_type = FLASH_V;
+                        break;
+                    case 3:
+                        ctx.ram_type = FLASH512_V;
+                        break;
+                    case 4:
+                        ctx.ram_type = FLASH1M_V;
+                        break;
+                }
                 return;
             }
         }
@@ -53,30 +77,12 @@ static void find_ram_type() {
 }
 
 static void init_ram() {
-    switch(ctx.ram_type) {
-        case 0x00: // EEPROM_Vnnn
-            ctx.ram_data = malloc(0x2000);
-            break;
-        case 0x01: // SRAM_Vnnn
-            ctx.ram_data = malloc(0x8000);
-            break;
-        case 0x02: // FLASH_Vnnn
-            ctx.ram_data = malloc(0x10000);
-            break;
-        case 0x03: // FLASH512_Vnnn
-            ctx.ram_data = malloc(0x10000);
-            break;
-        case 0x04: // FLASH1M_Vnnn
-            ctx.ram_data = malloc(0x20000);
-            break;
-        default: // No RAM
-            ctx.ram_data = NULL;
-            break;
-    }
+    ctx.ram_data = malloc(ctx.ram_type);
     if (!ctx.ram_data) {
         printf("Failed to allocate RAM...\n");
         exit(1);
     }
+    memset(ctx.ram_data, 0, ctx.ram_type);
 }
 
 /**

@@ -9,4 +9,6 @@ int main(int argc, char **argv) {
   if (cart_load(argv[1])) {
     printf("Cart loaded successfully...\n");
   }
+
+  cart_save_ram();
 }

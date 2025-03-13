@@ -120,3 +120,31 @@ bool cart_load(char *cart) {
 
     return true;
 }
+
+void cart_load_ram() {
+    char filename[1048];
+    snprintf(filename, sizeof(filename), "%s.sav", ctx.filename);
+    FILE *fp = fopen(filename, "rb");
+
+    if (!fp) {
+        printf("Failed to open save...\n");
+        return;
+    }
+
+    fread(ctx.ram_data, ctx.ram_type, 1, fp);
+    fclose(fp);
+}
+
+void cart_save_ram() {
+    char filename[1048];
+    snprintf(filename, sizeof(filename), "%s.sav", ctx.filename);
+    FILE *fp = fopen(filename, "wb");
+
+    if (!fp) {
+        printf("Failed to open save...\n");
+        return;
+    }
+
+    fwrite(ctx.ram_data, ctx.ram_type, 1, fp);
+    fclose(fp);
+}

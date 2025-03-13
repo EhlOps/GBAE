@@ -16,3 +16,5 @@ typedef struct {
 } rom_header;
 
 bool cart_load(char *cart);
+void cart_load_ram();
+void cart_save_ram();

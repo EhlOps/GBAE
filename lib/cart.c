@@ -15,12 +15,12 @@ typedef struct {
     // ROM Data
     char filename[1024];
     uint32_t rom_size;
-    uint8_t *rom_data;
+    uint16_t *rom_data;
     rom_header *header;
 
     // RAM Data
     ram_type ram_type;
-    uint8_t *ram_data;
+    uint16_t *ram_data;
 } cart_context;
 
 static cart_context ctx;
@@ -151,6 +151,26 @@ void cart_save_ram() {
 }
 
 /**
+ * @brief Reads a byte from the cart ram.
+ * 
+ * @param addr the address to read from.
+ * @return uint8_t the value at the address.
+ */
+uint16_t read_cart_ram(uint32_t addr) {
+    if (addr >> 27 == 0x01) {
+        addr -= 0x08000000;
+        if (addr < 0x00 || addr >= ctx.ram_type) {
+            printf("INVALID RAM ADDR %08X\n", addr + 0x0A000000);
+            exit(-1);
+        }
+        return ctx.ram_data[addr];
+    } else {
+        printf("NOT CART RAM ADDRESS %08X\n", addr);
+        exit(-1);
+    }
+}
+
+/**
  * @brief Writes a byte to the cart ram.
  * 
  * @param addr the address to write to.
@@ -164,26 +184,5 @@ void write_cart_ram(uint32_t addr, uint8_t val) {
             exit(-1);
         }
         ctx.ram_data[addr] = val;
-    }
-}
-
-
-/**
- * @brief Reads a byte from the cart ram.
- * 
- * @param addr the address to read from.
- * @return uint8_t the value at the address.
- */
-uint8_t read_cart_ram(uint32_t addr) {
-    if (addr >> 27 == 0x01) {
-        addr -= 0x08000000;
-        if (addr < 0x00 || addr >= ctx.ram_type) {
-            printf("INVALID RAM ADDR %08X\n", addr + 0x0A000000);
-            exit(-1);
-        }
-        return ctx.ram_data[addr];
-    } else {
-        printf("NOT CART RAM ADDRESS %08X\n", addr);
-        exit(-1);
     }
 }

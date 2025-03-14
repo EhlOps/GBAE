@@ -22,4 +22,4 @@ void cart_save_ram();
 
 // Cart RAM functions
 void write_cart_ram(uint32_t addr, uint8_t val);
-uint8_t read_cart_ram(uint32_t addr);
+uint16_t read_cart_ram(uint32_t addr);

@@ -8,10 +8,10 @@
 #define HRAM_SIZE 0x0008000
 
 typedef struct {
-    // 256KB of WRAM
-    uint16_t wram[WRAM_SIZE];
-    // 32KB of WRAM
-    uint32_t hram[HRAM_SIZE];
+  // 256KB of WRAM
+  uint16_t wram[WRAM_SIZE];
+  // 32KB of WRAM
+  uint32_t hram[HRAM_SIZE];
 } ram_context;
 
 // LO-WRAM: 0x02000000 - 0x0203FFFF

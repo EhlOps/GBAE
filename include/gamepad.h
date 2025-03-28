@@ -3,16 +3,16 @@
 #include <common.h>
 
 typedef struct {
-    bool l;
-    bool r;
-    bool a;
-    bool b;
-    bool start;
-    bool select;
-    bool up;
-    bool down;
-    bool left;
-    bool right;
+  bool l;
+  bool r;
+  bool a;
+  bool b;
+  bool start;
+  bool select;
+  bool up;
+  bool down;
+  bool left;
+  bool right;
 } gamepad_state;
 
 bool gamepad_button_sel();

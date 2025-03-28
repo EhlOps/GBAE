@@ -20,7 +20,7 @@ typedef struct {
 
   // RAM Data
   ram_type ram_type;
-  uint16_t *ram_data;
+  uint8_t *ram_data;
 } cart_context;
 
 static cart_context ctx;
@@ -74,13 +74,7 @@ static void init_ram() {
   memset(ctx.ram_data, 0, ctx.ram_type);
 }
 
-/**
- * @brief Loads a cart into the context.
- *
- * @param cart the filename of the cart to load.
- * @return true if the cart is loaded successfully.
- * @return false if the cart failed to load.
- */
+
 bool cart_load(char *cart) {
   snprintf(ctx.filename, sizeof(ctx.filename), "%s", cart);
 
@@ -110,10 +104,6 @@ bool cart_load(char *cart) {
   return true;
 }
 
-/**
- * @brief Loads the game state from a .sav file into cart ram.
- *
- */
 void cart_load_ram() {
   char filename[1048];
   snprintf(filename, sizeof(filename), "%s.sav", ctx.filename);
@@ -128,10 +118,6 @@ void cart_load_ram() {
   fclose(fp);
 }
 
-/**
- * @brief Saves the game state from cart ram into a .sav file.
- *
- */
 void cart_save_ram() {
   char filename[1048];
   snprintf(filename, sizeof(filename), "%s.sav", ctx.filename);
@@ -146,13 +132,7 @@ void cart_save_ram() {
   fclose(fp);
 }
 
-/**
- * @brief Reads a byte from the cart ram.
- *
- * @param addr the address to read from.
- * @return uint8_t the value at the address.
- */
-uint16_t read_cart_ram(uint32_t addr) {
+uint8_t read_cart_ram(uint32_t addr) {
   if (addr >> 27 == 0x01) {
     addr -= 0x08000000;
     if (addr < 0x00 || addr >= ctx.ram_type) {
@@ -166,12 +146,6 @@ uint16_t read_cart_ram(uint32_t addr) {
   }
 }
 
-/**
- * @brief Writes a byte to the cart ram.
- *
- * @param addr the address to write to.
- * @param val the value to write.
- */
 void write_cart_ram(uint32_t addr, uint8_t val) {
   if (addr >> 27 == 0x01) {
     addr -= 0x08000000;

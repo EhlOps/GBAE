@@ -15,7 +15,7 @@ typedef struct {
   // ROM Data
   char filename[1024];
   uint32_t rom_size;
-  uint16_t *rom_data;
+  uint8_t *rom_data;
   rom_header *header;
 
   // RAM Data
@@ -73,7 +73,6 @@ static void init_ram() {
   }
   memset(ctx.ram_data, 0, ctx.ram_type);
 }
-
 
 bool cart_load(char *cart) {
   snprintf(ctx.filename, sizeof(ctx.filename), "%s", cart);
@@ -134,7 +133,7 @@ void cart_save_ram() {
 
 uint8_t read_cart_ram(uint32_t addr) {
   if (addr >> 27 == 0x01) {
-    addr -= 0x08000000;
+    addr -= CART_START;
     if (addr < 0x00 || addr >= ctx.ram_type) {
       printf("INVALID RAM ADDR %08X\n", addr + 0x0A000000);
       exit(-1);
@@ -148,7 +147,7 @@ uint8_t read_cart_ram(uint32_t addr) {
 
 void write_cart_ram(uint32_t addr, uint8_t val) {
   if (addr >> 27 == 0x01) {
-    addr -= 0x08000000;
+    addr -= CART_START;
     if (addr < 0x00 || addr >= ctx.ram_type) {
       printf("INVALID RAM ADDR %08X\n", addr + 0x0A000000);
       exit(-1);

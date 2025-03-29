@@ -1,4 +1,5 @@
 #include <cart.h>
+#include <clock.h>
 
 int main(int argc, char **argv) {
   if (argc < 2) {
@@ -10,4 +11,7 @@ int main(int argc, char **argv) {
   }
 
   cart_save_ram();
+
+  printf("Refresh rate: %f\n", display_frequency());
+  return 0;
 }

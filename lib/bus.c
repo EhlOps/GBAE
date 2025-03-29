@@ -1,4 +1,5 @@
 #include <bus.h>
+#include <io.h>
 #include <ram.h>
 
 //  Memory Map
@@ -28,9 +29,48 @@
 //      0x0C000000 - 0x0DFFFFFF: ROM - Wait State 2 (32MB)  16-bit
 //      0x0E000000 - 0x0E00FFFF: Game Pak SRAM      (64KB)  8-bit
 
+uint16_t read16(uint32_t addr) {
+  return bus_read8(addr) | (bus_read8(addr + 1) << 8);
+}
+
+uint32_t read32(uint32_t addr) {
+  return bus_read16(addr) | (bus_read16(addr + 2) << 16);
+}
+
 uint8_t bus_read8(uint32_t addr) {
   // WRAM (256KB)
   if (BETWEEN(addr, 0x02000000, 0x0203FFFF)) {
+    return read_wram8(addr);
+  }
+  // WRAM (32KB)
+  if (BETWEEN(addr, 0x03000000, 0x03007FFF)) {
+    return read_hram8(addr);
+  }
+  // IO
+  if (BETWEEN(addr, 0x04000000, 0x40003FE)) {
+    return read_io8(addr);
+  }
+  // BG/OBJ Palette RAM (1KB)
+  if (BETWEEN(addr, 0x05000000, 0x050003FF)) {
     NO_IMPL
   }
+  // VRAM (96KB)
+  if (BETWEEN(addr, 0x06000000, 0x06017FFF)) {
+    NO_IMPL
+  }
+  // OAM (1KB)
+  if (BETWEEN(addr, 0x07000000, 0x070003FF)) {
+    NO_IMPL
+  }
+  // ROM - Wait State 0, 1, and 2 (3 x 32MB)
+  if (BETWEEN(addr, 0x08000000, 0x0E00FFFF)) {
+    NO_IMPL
+  }
+  // Game Pak SRAM (64KB)
+  if (BETWEEN(addr, 0x0E000000, 0x0E00FFFF)) {
+    return read_cart_ram(addr);
+  }
+
+  printf("Invalid read8: %08X\n", addr);
+  exit(EXIT_FAILURE);
 }

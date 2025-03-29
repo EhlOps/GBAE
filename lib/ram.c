@@ -3,7 +3,7 @@
 static ram_context ctx;
 
 
-uint16_t read_wram16(uint32_t addr) {
+uint8_t read_wram8(uint32_t addr) {
   addr -= WRAM_START;
 
   if (addr < 0x00 || addr >= WRAM_SIZE) {
@@ -14,7 +14,7 @@ uint16_t read_wram16(uint32_t addr) {
   return ctx.wram[addr];
 }
 
-void write_wram16(uint32_t addr, uint16_t val) {
+void write_wram8(uint32_t addr, uint16_t val) {
   addr -= WRAM_START;
 
   if (addr < 0x00 || addr >= WRAM_SIZE) {
@@ -25,7 +25,7 @@ void write_wram16(uint32_t addr, uint16_t val) {
   ctx.wram[addr] = val;
 }
 
-uint32_t read_hram16(uint32_t addr) {
+uint8_t read_hram8(uint32_t addr) {
   addr -= HRAM_START;
 
   if (addr < 0x00 || addr >= HRAM_SIZE) {
@@ -36,7 +36,7 @@ uint32_t read_hram16(uint32_t addr) {
   return ctx.hram[addr];
 }
 
-void write_hram16(uint32_t addr, uint16_t val) {
+void write_hram8(uint32_t addr, uint16_t val) {
   addr -= HRAM_START;
 
   if (addr < 0x00 || addr >= HRAM_SIZE) {

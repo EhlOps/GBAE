@@ -9,3 +9,4 @@ add_library(
 )
 
 target_include_directories(emu PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(emu PUBLIC SDL3::SDL3)

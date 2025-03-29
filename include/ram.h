@@ -9,9 +9,9 @@
 
 typedef struct {
   // 256KB of WRAM
-  uint16_t wram[WRAM_SIZE];
+  uint8_t wram[WRAM_SIZE];
   // 32KB of WRAM
-  uint32_t hram[HRAM_SIZE];
+  uint8_t hram[HRAM_SIZE];
 } ram_context;
 
 // LO-WRAM: 0x02000000 - 0x0203FFFF
@@ -22,7 +22,7 @@ typedef struct {
  * @param addr The address to read from.
  * @return uint16_t The two bytes at the address.
  */
-uint16_t read_wram16(uint32_t addr);
+uint8_t read_wram8(uint32_t addr);
 
 /**
  * @brief Writes two bytes to WRAM.
@@ -40,7 +40,7 @@ void write_wram16(uint32_t addr, uint16_t val);
  * @param addr The address to read from.
  * @return uint32_t The four bytes at the address.
  */
-uint32_t read_hram16(uint32_t addr);
+uint8_t read_hram8(uint32_t addr);
 
 /**
  * @brief Writes four bytes to HRAM.

@@ -1,6 +1,8 @@
 #pragma once
 #include <common.h>
 
+#define CART_START 0x08000000
+
 typedef struct {
   uint8_t rom_entry[4];
   uint8_t logo[0x9C];
@@ -48,7 +50,6 @@ void cart_save_ram();
  */
 void write_cart_ram(uint32_t addr, uint8_t val);
 
-
 /**
  * @brief Writes a byte to the cart ram.
  *
@@ -56,3 +57,21 @@ void write_cart_ram(uint32_t addr, uint8_t val);
  * @param val the value to write.
  */
 uint8_t read_cart_ram(uint32_t addr);
+
+// Cart ROM functions
+
+/**
+ * @brief Writes a byte to the cart rom.
+ *
+ * @param addr the address to write to.
+ * @param val the value to write.
+ */
+void write_cart_rom(uint32_t addr, uint8_t val);
+
+/**
+ * @brief Reads a byte from the cart rom.
+ *
+ * @param addr the address to read from.
+ * @return uint8_t the value at the address.
+ */
+uint8_t read_cart_rom(uint32_t addr);

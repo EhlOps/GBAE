@@ -131,7 +131,7 @@ void cart_save_ram() {
   fclose(fp);
 }
 
-uint8_t read_cart_ram(uint32_t addr) {
+uint8_t cart_read_ram8(uint32_t addr) {
   if (addr >> 27 == 0x01) {
     addr -= CART_START;
     if (addr < 0x00 || addr >= ctx.ram_type) {
@@ -145,7 +145,7 @@ uint8_t read_cart_ram(uint32_t addr) {
   }
 }
 
-void write_cart_ram(uint32_t addr, uint8_t val) {
+void cart_write_ram8(uint32_t addr, uint8_t val) {
   if (addr >> 27 == 0x01) {
     addr -= CART_START;
     if (addr < 0x00 || addr >= ctx.ram_type) {
@@ -154,4 +154,10 @@ void write_cart_ram(uint32_t addr, uint8_t val) {
     }
     ctx.ram_data[addr] = val;
   }
+}
+
+void cart_write_rom8(uint32_t addr, uint8_t val){NO_IMPL}
+
+uint8_t cart_read_rom8(uint32_t addr) {
+  NO_IMPL
 }

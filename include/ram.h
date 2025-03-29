@@ -17,35 +17,35 @@ typedef struct {
 // LO-WRAM: 0x02000000 - 0x0203FFFF
 
 /**
- * @brief Reads the two bytes at the given address in WRAM.
+ * @brief Reads the two bytes at the given address in External Working RAM.
  *
  * @param addr The address to read from.
  * @return uint16_t The two bytes at the address.
  */
-uint8_t read_wram8(uint32_t addr);
+uint8_t read_ewram8(uint32_t addr);
 
 /**
- * @brief Writes two bytes to WRAM.
+ * @brief Writes two bytes to External Working RAM.
  *
  * @param addr The address to write to.
  * @param val The value to write.
  */
-void write_wram16(uint32_t addr, uint16_t val);
+void write_ewram16(uint32_t addr, uint16_t val);
 
 // HI-WRAM: 0x03000000 - 0x03007FFF
 
 /**
- * @brief Reads the four bytes at the given address in HRAM.
+ * @brief Reads the four bytes at the given address in Internal Working RAM.
  *
  * @param addr The address to read from.
  * @return uint32_t The four bytes at the address.
  */
-uint8_t read_hram8(uint32_t addr);
+uint8_t read_iwram8(uint32_t addr);
 
 /**
- * @brief Writes four bytes to HRAM.
+ * @brief Writes four bytes to Internal Working RAM.
  *
  * @param addr The address to write to.
  * @param val The value to write.
  */
-void write_hram(uint32_t addr, uint16_t val);
+void write_iwram(uint32_t addr, uint16_t val);

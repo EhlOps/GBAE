@@ -1,7 +1,7 @@
 #include <bus.h>
+#include <cart.h>
 #include <io.h>
 #include <ram.h>
-#include <cart.h>
 
 //  Memory Map
 //      Address Range            Description        Size    Bus Width
@@ -41,11 +41,11 @@ uint32_t read32(uint32_t addr) {
 uint8_t bus_read8(uint32_t addr) {
   // WRAM (256KB)
   if (BETWEEN(addr, 0x02000000, 0x0203FFFF)) {
-    return read_wram8(addr);
+    return read_ewram8(addr);
   }
   // WRAM (32KB)
   if (BETWEEN(addr, 0x03000000, 0x03007FFF)) {
-    return read_hram8(addr);
+    return read_iwram8(addr);
   }
   // IO
   if (BETWEEN(addr, 0x04000000, 0x40003FE)) {
@@ -69,7 +69,7 @@ uint8_t bus_read8(uint32_t addr) {
   }
   // Game Pak SRAM (64KB)
   if (BETWEEN(addr, 0x0E000000, 0x0E00FFFF)) {
-    return read_cart_ram(addr);
+    return cart_read_ram8(addr);
   }
 
   printf("Invalid read8: %08X\n", addr);

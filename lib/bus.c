@@ -1,6 +1,7 @@
 #include <bus.h>
 #include <cart.h>
 #include <io.h>
+#include <ppu.h>
 #include <ram.h>
 
 //  Memory Map
@@ -30,11 +31,13 @@
 //      0x0C000000 - 0x0DFFFFFF: ROM - Wait State 2 (32MB)  16-bit
 //      0x0E000000 - 0x0E00FFFF: Game Pak SRAM      (64KB)  8-bit
 
-uint16_t read16(uint32_t addr) {
+// TODO: Fix rams and bus to actually store the correct types
+
+uint16_t bus_read16(uint32_t addr) {
   return bus_read8(addr) | (bus_read8(addr + 1) << 8);
 }
 
-uint32_t read32(uint32_t addr) {
+uint32_t bus_read32(uint32_t addr) {
   return bus_read16(addr) | (bus_read16(addr + 2) << 16);
 }
 
@@ -53,25 +56,74 @@ uint8_t bus_read8(uint32_t addr) {
   }
   // BG/OBJ Palette RAM (1KB)
   if (BETWEEN(addr, 0x05000000, 0x050003FF)) {
-    NO_IMPL
+    return ppu_read_bgobjram8(addr);
   }
   // VRAM (96KB)
   if (BETWEEN(addr, 0x06000000, 0x06017FFF)) {
-    NO_IMPL
+    return ppu_read_vram8(addr);
   }
   // OAM (1KB)
   if (BETWEEN(addr, 0x07000000, 0x070003FF)) {
-    NO_IMPL
+    return ppu_read_oam8(addr);
   }
   // ROM - Wait State 0, 1, and 2 (3 x 32MB)
   if (BETWEEN(addr, 0x08000000, 0x0E00FFFF)) {
-    NO_IMPL
+    return cart_read_rom8(addr);
   }
   // Game Pak SRAM (64KB)
   if (BETWEEN(addr, 0x0E000000, 0x0E00FFFF)) {
     return cart_read_ram8(addr);
   }
 
-  printf("Invalid read8: %08X\n", addr);
+  fprintf(stderr, "Invalid read: %08X\n", addr);
+  exit(EXIT_FAILURE);
+}
+
+void bus_write16(uint32_t addr, uint16_t val) {
+  uint8_t b1 = (val & 0x00FF);
+  uint8_t b2 = (val & 0xFF00) >> 8;
+  bus_write8(addr, b1);
+  bus_write8(addr + 1, b2);
+}
+
+void bus_write32(uint32_t addr, uint32_t val) {}
+
+void bus_write8(uint32_t addr, uint8_t val) {
+  // WRAM (256KB)
+  if (BETWEEN(addr, 0x02000000, 0x0203FFFF)) {
+    write_ewram8(addr, val);
+  }
+  // WRAM (32KB)
+  if (BETWEEN(addr, 0x03000000, 0x03007FFF)) {
+    write_iwram8(addr, val);
+  }
+  // IO
+  if (BETWEEN(addr, 0x04000000, 0x40003FE)) {
+    write_io8(addr, val);
+  }
+  // BG/OBJ Palette RAM (1KB)
+  if (BETWEEN(addr, 0x05000000, 0x050003FF)) {
+    ppu_write_bgobjram8(addr, val);
+  }
+  // VRAM (96KB)
+  if (BETWEEN(addr, 0x06000000, 0x06017FFF)) {
+    ppu_write_vram8(addr, val);
+  }
+  // OAM (1KB)
+  if (BETWEEN(addr, 0x07000000, 0x070003FF)) {
+    ppu_write_oam8(addr, val);
+  }
+  // ROM - Wait State 0, 1, and 2 (3 x 32MB)
+  if (BETWEEN(addr, 0x08000000, 0x0E00FFFF)) {
+    fprintf(stderr, "Invalid write (Cannot write to GamePak ROM): %08X\n",
+            addr);
+    exit(EXIT_FAILURE);
+  }
+  // Game Pak SRAM (64KB)
+  if (BETWEEN(addr, 0x0E000000, 0x0E00FFFF)) {
+    cart_write_ram8(addr, val);
+  }
+
+  fprintf(stderr, "Invalid write: %08X\n", addr);
   exit(EXIT_FAILURE);
 }

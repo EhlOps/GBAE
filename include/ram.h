@@ -30,7 +30,7 @@ uint8_t read_ewram8(uint32_t addr);
  * @param addr The address to write to.
  * @param val The value to write.
  */
-void write_ewram16(uint32_t addr, uint16_t val);
+void write_ewram8(uint32_t addr, uint16_t val);
 
 // HI-WRAM: 0x03000000 - 0x03007FFF
 
@@ -48,4 +48,4 @@ uint8_t read_iwram8(uint32_t addr);
  * @param addr The address to write to.
  * @param val The value to write.
  */
-void write_iwram(uint32_t addr, uint16_t val);
+void write_iwram8(uint32_t addr, uint16_t val);

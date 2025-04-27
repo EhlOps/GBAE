@@ -123,7 +123,8 @@ void bus_write8(uint32_t addr, uint8_t val) {
   if (BETWEEN(addr, 0x0E000000, 0x0E00FFFF)) {
     cart_write_ram8(addr, val);
   }
-
-  fprintf(stderr, "Invalid write: %08X\n", addr);
-  exit(EXIT_FAILURE);
+  if (!BETWEEN(addr, 0x00000000, 0x0E00FFFF)) {
+    fprintf(stderr, "Invalid write: %08X\n", addr);
+    exit(EXIT_FAILURE);
+  }
 }

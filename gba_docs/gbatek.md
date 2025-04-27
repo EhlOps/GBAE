@@ -1,5 +1,6 @@
 #### From: https://problemkaputt.de/gbatek.htm
 
+```
 CPU Modes
 ARM Mode ARM7TDMI 32bit RISC CPU, 16.78MHz, 32bit opcodes (GBA)
 THUMB Mode ARM7TDMI 32bit RISC CPU, 16.78MHz, 16bit opcodes (GBA)
@@ -75,16 +76,17 @@ Region Bus Read Write Cycles
 BIOS ROM 32 8/16/32 - 1/1/1
 Work RAM 32K 32 8/16/32 8/16/32 1/1/1
 I/O 32 8/16/32 8/16/32 1/1/1
-OAM 32 8/16/32 16/32 1/1/1 \*
-Work RAM 256K 16 8/16/32 8/16/32 3/3/6 \*\*
-Palette RAM 16 8/16/32 16/32 1/1/2 \*
-VRAM 16 8/16/32 16/32 1/1/2 \*
-GamePak ROM 16 8/16/32 - 5/5/8 \*\*/\*\*\*
-GamePak Flash 16 8/16/32 16/32 5/5/8 \*\*/\*\*\*
-GamePak SRAM 8 8 8 5 \*\*
-Timing Notes: \* Plus 1 cycle if GBA accesses video memory at the same time.
-\*\* Default waitstate settings, see System Control chapter.
-\*\*\* Separate timings for sequential, and non-sequential accesses.
+OAM 32 8/16/32 16/32 1/1/1 *
+Work RAM 256K 16 8/16/32 8/16/32 3/3/6 **
+Palette RAM 16 8/16/32 16/32 1/1/2 *
+VRAM 16 8/16/32 16/32 1/1/2 *
+GamePak ROM 16 8/16/32 - 5/5/8 **/***
+GamePak Flash 16 8/16/32 16/32 5/5/8 **/***
+GamePak SRAM 8 8 8 5 **
+Timing Notes:
+* Plus 1 cycle if GBA accesses video memory at the same time.
+** Default waitstate settings, see System Control chapter.
+*** Separate timings for sequential, and non-sequential accesses.
 One cycle equals approx. 59.59ns (ie. 16.78MHz clock).
 All memory (except GamePak SRAM) can be accessed by 16bit and 32bit DMA.
 
@@ -223,3 +225,4 @@ Interrupt, Waitstate, and Power-Down Control
 4000804h - - Not used
 4xx0800h 4 R/W ? Mirrors of 4000800h (repeated each 64K)
 4700000h 4 W (3DS) Disable ARM7 bootrom overlay (3DS only)
+```

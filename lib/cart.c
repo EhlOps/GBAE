@@ -67,10 +67,6 @@ static void find_ram_type() {
 
 static void init_ram() {
   ctx.ram_data = malloc(ctx.ram_type);
-  if (!ctx.ram_data) {
-    printf("Failed to allocate RAM...\n");
-    exit(1);
-  }
   memset(ctx.ram_data, 0, ctx.ram_type);
 }
 
@@ -131,7 +127,7 @@ void cart_save_ram() {
   fclose(fp);
 }
 
-uint8_t cart_read_ram8(uint32_t addr) {
+uint8_t cart_read_ram16(uint32_t addr) {
   if (addr >> 27 == 0x01) {
     addr -= CART_START;
     if (addr < 0x00 || addr >= ctx.ram_type) {
@@ -152,6 +148,7 @@ void cart_write_ram8(uint32_t addr, uint8_t val) {
       printf("INVALID RAM ADDR %08X\n", addr + 0x0A000000);
       exit(-1);
     }
+
     ctx.ram_data[addr] = val;
   }
 }

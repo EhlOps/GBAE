@@ -1,5 +1,6 @@
 #include <SDL3/SDL.h>
 #include <cart.h>
+#include <cpu.h>
 
 int main(int argc, char **argv) {
   if (argc < 2) {
@@ -14,6 +15,12 @@ int main(int argc, char **argv) {
   if (cart_load(argv[1])) {
     printf("Cart loaded successfully...\n");
   }
+
+  cpu_init();
+  printf("CPU initialized...\n");
+
+  printf("CPU mode: 0x%x\n", get_cpu_mode());
+  printf("CPU state: %s\n", get_cpu_state() ? "THUMB" : "ARM");
 
   return 0;
 }

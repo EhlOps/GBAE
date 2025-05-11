@@ -127,26 +127,26 @@ void cart_save_ram() {
   fclose(fp);
 }
 
-uint8_t cart_read_ram16(uint32_t addr) {
-  if (addr >> 27 == 0x01) {
-    addr -= CART_START;
+uint8_t cart_read_ram8(uint32_t addr) {
+  if (addr >> 24 == 0x0E) {
+    addr -= CART_RAM_START;
     if (addr < 0x00 || addr >= ctx.ram_type) {
-      printf("INVALID RAM ADDR %08X\n", addr + 0x0A000000);
-      exit(-1);
+      fprintf(stderr, "INVALID RAM ADDR 0x%08X\n", addr + 0x0A000000);
+      exit(EXIT_FAILURE);
     }
     return ctx.ram_data[addr];
   } else {
-    printf("NOT CART RAM ADDRESS %08X\n", addr);
-    exit(-1);
+    fprintf(stderr, "NOT CART RAM ADDRESS 0x%08X\n", addr);
+    exit(EXIT_FAILURE);
   }
 }
 
 void cart_write_ram8(uint32_t addr, uint8_t val) {
-  if (addr >> 27 == 0x01) {
-    addr -= CART_START;
+  if (addr >> 24 == 0x0E) {
+    addr -= CART_RAM_START;
     if (addr < 0x00 || addr >= ctx.ram_type) {
-      printf("INVALID RAM ADDR %08X\n", addr + 0x0A000000);
-      exit(-1);
+      fprintf(stderr, "INVALID RAM ADDR 0x%08X\n", addr + 0x0A000000);
+      exit(EXIT_FAILURE);
     }
 
     ctx.ram_data[addr] = val;
@@ -156,5 +156,15 @@ void cart_write_ram8(uint32_t addr, uint8_t val) {
 void cart_write_rom8(uint32_t addr, uint8_t val){NO_IMPL}
 
 uint8_t cart_read_rom8(uint32_t addr) {
-  NO_IMPL
+  if (addr >> 24 == 0x08) {
+    addr -= CART_ROM_START;
+    if (addr < 0x00 || addr >= ctx.rom_size) {
+      fprintf(stderr, "INVALID ROM ADDR 0x%08X\n", addr + 0x08000000);
+      exit(EXIT_FAILURE);
+    }
+    return ctx.rom_data[addr];
+  } else {
+    fprintf(stderr, "NOT CART ROM ADDRESS 0x%08X\n", addr);
+    exit(EXIT_FAILURE);
+  }
 }

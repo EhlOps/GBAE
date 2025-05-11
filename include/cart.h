@@ -1,7 +1,8 @@
 #pragma once
 #include <common.h>
 
-#define CART_START 0x08000000
+#define CART_ROM_START 0x08000000
+#define CART_RAM_START 0x0E000000
 
 typedef struct {
   uint8_t rom_entry[4];
